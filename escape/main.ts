@@ -1,5 +1,6 @@
 /// <reference path="../src/index.ts" />
 /// <reference path="./mouse.ts" />
+/// <reference path="./textbox.ts" />
 
 class GuiRoom extends ECS.Room {
     private renderer = new Render.RenderList();
@@ -7,6 +8,7 @@ class GuiRoom extends ECS.Room {
     public RoomLayer = new Render.Layer(1, 0);
 
     private DebugRenderSystem = new RenderDebug.System(this.renderer);
+    private TextRenderSystem = new Textbox.RenderTextSystem(this.renderer);
 
     runPhysics() {
 
@@ -18,11 +20,17 @@ class GuiRoom extends ECS.Room {
         this.renderer.reset();
 
         this.DebugRenderSystem.run(this.Entities);
+        this.TextRenderSystem.run(this.Entities);
 
         this.renderer.drawTo(cx);
     };
 
-    addBox(location: ECS.Location) {
+    addBox(location: ECS.Location, text: Textbox.Text = null) {
+
+        if(text) {
+            text.Layer = this.RoomLayer;
+        };
+
         let bounds = new Render.Box(-16, -16, 32, 32);
         let entity = {
             Location: location,
@@ -41,7 +49,8 @@ class GuiRoom extends ECS.Room {
                         entity.RenderDebugBox.color = "#0f0";
                     }
                 }
-            )
+            ),
+            RenderText: text
         };
 
         this.Entities.push(entity);
@@ -75,8 +84,14 @@ class EscapeMain {
 
         this.room.addBox(new ECS.Location(0,0));
         this.room.addBox(new ECS.Location(150,150));
-        this.room.addBox(new ECS.Location(300,70));
-        this.room.addBox(new ECS.Location(200,250));
+        this.room.addBox(
+            new ECS.Location(300,70),
+            new Textbox.Text(null, "Test Text")
+        );
+        this.room.addBox(
+            new ECS.Location(200,250),
+            new Textbox.Text(null, "Test\nMultiline\nText")
+        );
     };
 
 };
