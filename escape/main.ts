@@ -7,8 +7,10 @@
 class GuiRoom extends ECS.Room {
     private renderer = new Render.RenderList();
 
+    public DropLayer = new Render.Layer(0, 0);
     public RoomLayer = new Render.Layer(1, 0);
     public TextboxLayer = new Render.Layer(3, 0);
+    public CursorLayer = new Render.Layer(10, 0);
 
     private SlideSystem = new Slide.SlideSystem();
     private PinSystem = new Pin.PinSystem();
@@ -63,6 +65,33 @@ class GuiRoom extends ECS.Room {
         this.Entities.push(entity);
         return entity;
     };
+
+    addDropTarget(location: ECS.Location) {
+        let bounds = new Render.Box(-64, -12, 128, 24);
+        let entity = {
+            Location: location,
+            RenderDebugBox: new RenderDebug.Box(
+                this.DropLayer,
+                bounds,
+                "#999"
+            ),
+            ClickTarget: new Mouse.ClickTarget(
+                Mouse.UiLayer.Room,
+                bounds,
+                clickedWith => {
+                    if(clickedWith != null) {
+                        if(RenderDebug.HasBox(clickedWith)) {
+                            clickedWith.RenderDebugBox.Layer = this.RoomLayer;
+                            Mouse.CancelCursor(clickedWith);
+                        }
+                    }
+                }
+            )
+        };
+
+        this.Entities.push(entity);
+        return entity;
+    };
 };
 
 @Applet.Bind("canvas")
@@ -111,6 +140,16 @@ class EscapeMain {
 
         let slideBehavior = new Slide.SlideBehavior(150, 150);
         (slideBox as any as Slide.HasSlideBehavior).SlideBehavior = slideBehavior;
+
+        slideBox.ClickTarget.callback = clickedWith => {
+            if(clickedWith == null) {
+                slideBox.RenderDebugBox.Layer = this.room.CursorLayer;
+                Mouse.MakeCursor(slideBox);
+            }
+        };
+
+        this.room.addDropTarget(new ECS.Location(200,200));
+        this.room.addDropTarget(new ECS.Location(300,120));
     };
 
 };
