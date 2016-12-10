@@ -1,3 +1,9 @@
+/// <reference path="../src/index.ts" />
+/// <reference path="./mouse.ts" />
+/// <reference path="./pin.ts" />
+/// <reference path="./slide.ts" />
+/// <reference path="./textbox.ts" />
+
 class GuiRoom extends ECS.Room {
     private renderer = new Render.RenderList();
 
@@ -18,7 +24,7 @@ class GuiRoom extends ECS.Room {
     };
     runRender(cx: CanvasRenderingContext2D) {
         cx.fillStyle = "red";
-        cx.fillRect(0,0, 500,300);
+        cx.fillRect(0, 0, 500, 300);
 
         this.renderer.reset();
 
@@ -28,36 +34,41 @@ class GuiRoom extends ECS.Room {
         this.renderer.drawTo(cx);
     };
 
-    addBox(location: ECS.Location, text: Textbox.Text = null) {
+    showMessageBox(message: string) {
+        Textbox.MessageBox(this.Entities, this.TextboxLayer, message);
+    };
 
-        if(text) {
-            text.Layer = this.RoomLayer;
-        };
-
+    makeDummyObject(color: string, x: number, y: number, label: string)
+        : RenderDebug.HasBox & Textbox.HasText {
         let bounds = new Render.Box(-16, -16, 32, 32);
         let entity = {
-            Location: location,
+            Location: new ECS.Location(x, y),
             RenderDebugBox: new RenderDebug.Box(
                 this.RoomLayer,
                 bounds,
-                "#0f0"
+                color
             ),
-            ClickTarget: new Mouse.ClickTarget(
-                Mouse.UiLayer.Room,
-                bounds,
-                clickedWith => {
-                    if(entity.RenderDebugBox.color == "#0f0") {
-                        entity.RenderDebugBox.color = "#ff0";
-                    } else {
-                        entity.RenderDebugBox.color = "#0f0";
-                    }
-                }
-            ),
-            RenderText: text
+            RenderText: new Textbox.Text(this.RoomLayer, label)
         };
+
+        this.onClick(entity, clickedWith => {
+            if (clickedWith == null) {
+                entity.RenderDebugBox.Layer = this.CursorLayer;
+                entity.RenderText.Layer = this.CursorLayer;
+                Mouse.MakeCursor(entity);
+            }
+        });
 
         this.Entities.push(entity);
         return entity;
+    };
+
+    onClick(entity: RenderDebug.HasBox, callback: (clicked: Mouse.IsCursor) => void) {
+        (entity as any).ClickTarget = new Mouse.ClickTarget(
+            Mouse.UiLayer.Room,
+            entity.RenderDebugBox.bounds,
+            callback
+        )
     };
 
     addDropTarget(location: ECS.Location) {
@@ -73,11 +84,14 @@ class GuiRoom extends ECS.Room {
                 Mouse.UiLayer.Room,
                 bounds,
                 clickedWith => {
-                    if(clickedWith != null) {
-                        if(RenderDebug.HasBox(clickedWith)) {
+                    if (clickedWith != null) {
+                        if (RenderDebug.HasBox(clickedWith)) {
                             clickedWith.RenderDebugBox.Layer = this.RoomLayer;
-                            Mouse.CancelCursor(clickedWith);
                         }
+                        if (Textbox.HasText(clickedWith)) {
+                            clickedWith.RenderText.Layer = this.RoomLayer;
+                        }
+                        Mouse.CancelCursor(clickedWith);
                     }
                 }
             )
