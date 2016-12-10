@@ -90,7 +90,7 @@ class EscapeMain {
     resetGame() {
         this.room.Entities.length = 0;
 
-        this.room.addBox(new ECS.Location(0,0));
+        let triggerBox = this.room.addBox(new ECS.Location(0,0));
         let slideBox = this.room.addBox(new ECS.Location(525,150));
         this.room.addBox(
             new ECS.Location(300,70),
@@ -100,6 +100,14 @@ class EscapeMain {
             new ECS.Location(200,250),
             new Textbox.Text(null, "Test\nMultiline\nText")
         );
+
+        triggerBox.ClickTarget.callback = () => {
+            Textbox.MessageBox(
+                this.room.Entities,
+                this.room.TextboxLayer,
+                "MessageBox Text"
+            )
+        };
 
         let slideBehavior = new Slide.SlideBehavior(150, 150);
         (slideBox as any as Slide.HasSlideBehavior).SlideBehavior = slideBehavior;
