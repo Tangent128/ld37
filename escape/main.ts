@@ -1,5 +1,6 @@
 /// <reference path="../src/index.ts" />
 /// <reference path="./mouse.ts" />
+/// <reference path="./pin.ts" />
 /// <reference path="./slide.ts" />
 /// <reference path="./textbox.ts" />
 
@@ -10,12 +11,14 @@ class GuiRoom extends ECS.Room {
     public TextboxLayer = new Render.Layer(3, 0);
 
     private SlideSystem = new Slide.SlideSystem();
+    private PinSystem = new Pin.PinSystem();
 
     private DebugRenderSystem = new RenderDebug.System(this.renderer);
     private TextRenderSystem = new Textbox.RenderTextSystem(this.renderer);
 
     runPhysics() {
         this.SlideSystem.run(this.Entities);
+        this.PinSystem.run(this.Entities);
     };
     runRender(cx: CanvasRenderingContext2D) {
         cx.fillStyle = "red";
