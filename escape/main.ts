@@ -19,7 +19,7 @@ class GuiRoom extends ECS.Room {
     };
     runRender(cx: CanvasRenderingContext2D) {
         cx.fillStyle = "red";
-        cx.fillRect(0,0, 400,300);
+        cx.fillRect(0,0, 500,300);
 
         this.renderer.reset();
 
