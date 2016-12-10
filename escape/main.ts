@@ -1,17 +1,21 @@
 /// <reference path="../src/index.ts" />
 /// <reference path="./mouse.ts" />
+/// <reference path="./slide.ts" />
 /// <reference path="./textbox.ts" />
 
 class GuiRoom extends ECS.Room {
     private renderer = new Render.RenderList();
 
     public RoomLayer = new Render.Layer(1, 0);
+    public TextboxLayer = new Render.Layer(3, 0);
+
+    private SlideSystem = new Slide.SlideSystem();
 
     private DebugRenderSystem = new RenderDebug.System(this.renderer);
     private TextRenderSystem = new Textbox.RenderTextSystem(this.renderer);
 
     runPhysics() {
-
+        this.SlideSystem.run(this.Entities);
     };
     runRender(cx: CanvasRenderingContext2D) {
         cx.fillStyle = "red";
@@ -54,13 +58,14 @@ class GuiRoom extends ECS.Room {
         };
 
         this.Entities.push(entity);
+        return entity;
     };
 };
 
 @Applet.Bind("canvas")
 class EscapeMain {
 
-    private room = new GuiRoom(20);
+    private room = new GuiRoom(30);
 
     private loop: ECS.Loop;
 
@@ -83,7 +88,7 @@ class EscapeMain {
         this.room.Entities.length = 0;
 
         this.room.addBox(new ECS.Location(0,0));
-        this.room.addBox(new ECS.Location(150,150));
+        let slideBox = this.room.addBox(new ECS.Location(525,150));
         this.room.addBox(
             new ECS.Location(300,70),
             new Textbox.Text(null, "Test Text")
@@ -92,6 +97,9 @@ class EscapeMain {
             new ECS.Location(200,250),
             new Textbox.Text(null, "Test\nMultiline\nText")
         );
+
+        let slideBehavior = new Slide.SlideBehavior(150, 150);
+        (slideBox as any as Slide.HasSlideBehavior).SlideBehavior = slideBehavior;
     };
 
 };
