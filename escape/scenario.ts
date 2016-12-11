@@ -189,7 +189,10 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
 function ResetGame(room: GuiRoom<GameState>) {
 
-    room.Entities.length = 0;
+    // delete everything
+    room.Entities.map(entity => {
+        entity.deleted = true;
+    });
 
     let triggerBox = room.makeDummyObject("#000", 0, 0, "Trigger");
     room.onClick(triggerBox, clickedWith => {
