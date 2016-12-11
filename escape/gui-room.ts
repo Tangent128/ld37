@@ -117,11 +117,17 @@ class GuiRoom<State> extends ECS.Room {
     };
 
     onClick(entity: RenderDebug.HasBox, callback: (clicked: Mouse.IsCursor) => void) {
-        (entity as any).ClickTarget = new Mouse.ClickTarget(
-            Mouse.UiLayer.Room,
-            entity.RenderDebugBox.bounds,
-            callback
-        )
+
+        if(Mouse.HasTarget(entity)) {
+            entity.ClickTarget.callback = callback;
+        } else {
+            (entity as any).ClickTarget = new Mouse.ClickTarget(
+                Mouse.UiLayer.Room,
+                entity.RenderDebugBox.bounds,
+                callback
+            );
+        }
+
     };
 
     assignInventoryItem(
