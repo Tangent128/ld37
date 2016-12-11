@@ -15,18 +15,29 @@ class GameState {
     // past
     PastTable = new Array<InventoryItemType>();
     PastHole = new Array<InventoryItemType>();
+    PastTimeCapsule = [
+    ];
+
+    TimeCapsuleUncovered = false;
+    TimeCapsuleViewed = false;
 
     // present
+    PresentTable = new Array<InventoryItemType>();
     PresentDesk = new Array<InventoryItemType>();
 
+    DinosaurSummoned = false;
+
     // future
+    FutureTable = [
+        InventoryItemType.Shovel,
+    ];
     FutureVault = [
         InventoryItemType.Seed,
     ];
+    FutureDinosaur = new Array<InventoryItemType>();
 
     // misc
     Inventory = [
-        InventoryItemType.Shovel,
         InventoryItemType.Screwdriver,
         InventoryItemType.Lead,
         InventoryItemType.Gold
