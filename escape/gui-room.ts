@@ -68,6 +68,7 @@ class GuiRoom<State> extends ECS.Room {
     runPhysics() {
         this.SlideSystem.run(this.Entities);
         this.PinSystem.run(this.Entities);
+        this.cleanup();
     };
     runRender(cx: CanvasRenderingContext2D) {
         cx.fillStyle = "red";
