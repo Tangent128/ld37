@@ -84,7 +84,7 @@ function PopulateDropTarget(
     layer: Render.Layer = null
 ) {
     let bounds = target.ClickTarget.bounds;
-    let x = bounds.x;
+    let x = bounds.x + 20;
     let y = bounds.y + bounds.h / 2;
 
     let itemLayer = layer || room.RoomLayer;
@@ -94,7 +94,7 @@ function PopulateDropTarget(
         entity.RenderDebugBox.Layer = itemLayer;
         entity.RenderText.Layer = itemLayer;
         entity.ClickTarget.layer = target.ClickTarget.layer;
-        x = x + 32;
+        x = x + 40;
     });
 };
 
