@@ -199,6 +199,35 @@ function PopupTimeMachine(room: GuiRoom<GameState>) {
     };
 };
 
+function PopupTimeCapsule(room: GuiRoom<GameState>) {
+    let cancel: Function;
+
+    let root = room.makeDummyObject("#40a", 200, 150, "Time capsule");
+    ToObjectLayer(room, root);
+
+    let contents = GenerateDropTarget(
+        room, room.State.FutureVault,
+        new Render.Box(200, 200, 80, 32),
+        Mouse.UiLayer.Object,
+        room.ObjectLayer
+    );
+    ToObjectLayer(room, contents);
+
+    let back = room.makeDummyObject("#440", 270, 170, "Close");
+    ToObjectLayer(room, back);
+    room.onClick(back, clickedBy => {
+        if(clickedBy == null) {
+            cancel();
+        }
+    });
+
+    cancel = () => {
+        root.deleted = true;
+        back.deleted = true;
+        GenerateRoom(room);
+    };
+};
+
 function PopupSeedVault(room: GuiRoom<GameState>) {
     let cancel: Function;
 
