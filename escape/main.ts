@@ -7,7 +7,7 @@
 @Applet.Bind("canvas")
 class EscapeMain {
 
-    private room = new GuiRoom(30);
+    private room = new GuiRoom(30, new GameState());
 
     private loop: ECS.Loop;
 

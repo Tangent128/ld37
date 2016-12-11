@@ -4,7 +4,7 @@
 /// <reference path="./slide.ts" />
 /// <reference path="./textbox.ts" />
 
-class GuiRoom extends ECS.Room {
+class GuiRoom<State> extends ECS.Room {
     private renderer = new Render.RenderList();
 
     public DropLayer = new Render.Layer(0, 0);
@@ -17,6 +17,13 @@ class GuiRoom extends ECS.Room {
 
     private DebugRenderSystem = new RenderDebug.System(this.renderer);
     private TextRenderSystem = new Textbox.RenderTextSystem(this.renderer);
+
+    constructor(
+        fps: number,
+        public State: State
+    ) {
+        super(fps);
+    };
 
     runPhysics() {
         this.SlideSystem.run(this.Entities);

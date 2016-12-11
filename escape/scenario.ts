@@ -2,7 +2,10 @@
 /// <reference path="./slide.ts" />
 /// <reference path="./gui-room.ts" />
 
-function ResetGame(room: GuiRoom) {
+class GameState {
+};
+
+function ResetGame(room: GuiRoom<GameState>) {
 
     room.Entities.length = 0;
 
