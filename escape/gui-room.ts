@@ -42,6 +42,13 @@ interface HasInventoryItem {
 function HasInventoryItem(entity: any): entity is HasInventoryItem {
     return entity.InventoryItem != null;
 };
+function IsInventoryItem(entity: any, type: InventoryItemType) {
+    return Boolean(
+        entity
+        && HasInventoryItem(entity)
+        && entity.InventoryItem.Type == type
+    );
+};
 
 
 class GuiRoom<State> extends ECS.Room {

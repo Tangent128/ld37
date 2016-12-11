@@ -193,6 +193,16 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
         case TimePeriod.Present:
 
+            GenerateItem(room, "#444", 450, 30, "Ventilation Duct", clickedBy => {
+                if(IsInventoryItem(clickedBy, InventoryItemType.Screwdriver)) {
+                    room.showMessageBox("Working the grate off with the screwdriver, you open up a path to freedom!", () => {
+                        ResetGame(room);
+                    });
+                } else {
+                    room.showMessageBox("The grate's screwed on tightly.");
+                }
+            });
+
             GenerateDropTarget(room, State.Desk, new Render.Box(300,150, 128,25));
 
             break;
