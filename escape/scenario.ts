@@ -34,12 +34,13 @@ class GameState {
     FutureVault = [
         InventoryItemType.Seed,
     ];
-    FutureDinosaur = new Array<InventoryItemType>();
+    FutureDinosaur = [
+        InventoryItemType.Lead,
+    ];
 
     // misc
     Inventory = [
         InventoryItemType.Screwdriver,
-        InventoryItemType.Lead,
         InventoryItemType.Gold
     ];
 
@@ -314,13 +315,9 @@ function GenerateRoom(room: GuiRoom<GameState>) {
     switch(State.TimePeriod) {
         case TimePeriod.Alchemy:
 
-            GenerateDropTarget(room, State.PastHole, new Render.Box(250,200, 25,25));
+            background = State.AlchemyBg;
 
-            GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
-                if(clickedBy == null) {
-                    PopupTimeMachine(room);
-                }
-            });
+            GenerateDropTarget(room, State.PastHole, new Render.Box(250,200, 25,25));
 
             break;
 
@@ -349,28 +346,17 @@ function GenerateRoom(room: GuiRoom<GameState>) {
             GenerateDropTarget(room, State.PresentTable, new Render.Box(220,124, 142,28));
             GenerateDropTarget(room, State.PresentDesk, new Render.Box(261,176, 49,85));
 
-            GenerateClickZone(room, 428, 198, 57, 103, clickedBy => {
-                if(clickedBy == null) {
-                    PopupTimeMachine(room);
-                }
-            });
-
             break;
 
         case TimePeriod.Future:
+
+            background = State.FutureBg;
 
             GenerateItem(room, "#44f", 450, 100, "Seed Vault", clickedBy => {
                 if(clickedBy == null) {
                     PopupSeedVault(room);
                 }
             });
-
-            GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
-                if(clickedBy == null) {
-                    PopupTimeMachine(room);
-                }
-            });
-
 
             break;
     }
@@ -388,6 +374,13 @@ function GenerateRoom(room: GuiRoom<GameState>) {
             Generated: true
         });
     }
+
+    // time machine
+    GenerateClickZone(room, 428, 198, 57, 103, clickedBy => {
+        if(clickedBy == null) {
+            PopupTimeMachine(room);
+        }
+    });
 };
 
 function ResetGame(room: GuiRoom<GameState>) {
