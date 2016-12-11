@@ -4,7 +4,8 @@
 
 class GameState {
     spotA = new Array<InventoryItemType>();
-    spotB = new Array<InventoryItemType>();
+    inventory = new Array<InventoryItemType>();
+};
 };
 
 function ResetGame(room: GuiRoom<GameState>) {
@@ -31,7 +32,9 @@ function ResetGame(room: GuiRoom<GameState>) {
 
     let triggerBox = room.makeDummyObject("#000", 0, 0, "Trigger");
     room.onClick(triggerBox, clickedWith => {
-        room.showMessageBox("MessageBox Text");
+        if(clickedWith == null) {
+            room.showMessageBox("MessageBox Text");
+        }
     });
 
     let slideBox = room.makeDummyObject("#0a6", 525, 150, "Slide");
@@ -43,6 +46,13 @@ function ResetGame(room: GuiRoom<GameState>) {
     let blahBox = room.makeDummyObject("#80f", 400, 220, "Shovel");
     room.assignInventoryItem(blahBox, InventoryItemType.Shovel);
 
-    room.makeInventoryDropper(new ECS.Location(200, 200), room.State.spotA);
-    room.makeInventoryDropper(new ECS.Location(300, 120), room.State.spotB);
+    room.makeInventoryDropper(
+        new Render.Box(300,150, 128,25),
+        room.State.spotA
+    );
+    room.makeInventoryDropper(
+        new Render.Box(0,300, 500,100),
+        room.State.inventory,
+        null
+    );
 };

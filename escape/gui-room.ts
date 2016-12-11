@@ -131,17 +131,19 @@ class GuiRoom<State> extends ECS.Room {
         }
     };
 
-    makeInventoryDropper(location: ECS.Location, list: InventoryItemType[]) {
-        let bounds = new Render.Box(-64, -12, 128, 24);
+    makeInventoryDropper(
+        bounds: Render.Box,
+        list: InventoryItemType[],
+        clickLayer: Mouse.UiLayer = Mouse.UiLayer.Room
+    ) {
         let entity = {
-            Location: location,
             RenderDebugBox: new RenderDebug.Box(
                 this.DropLayer,
                 bounds,
                 "#999"
             ),
             ClickTarget: new Mouse.ClickTarget(
-                Mouse.UiLayer.Room,
+                clickLayer,
                 bounds,
                 clickedWith => {
                     if (clickedWith != null && HasInventoryItem(clickedWith)) {
@@ -150,6 +152,9 @@ class GuiRoom<State> extends ECS.Room {
                         }
                         if (Textbox.HasText(clickedWith)) {
                             clickedWith.RenderText.Layer = this.RoomLayer;
+                        }
+                        if(Mouse.HasTarget(clickedWith)) {
+                            clickedWith.ClickTarget.layer = clickLayer;
                         }
                         clickedWith.InventoryItem.addTo(list);
                         Mouse.CancelCursor(clickedWith);
