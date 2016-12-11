@@ -56,10 +56,17 @@ class GuiRoom<State> extends ECS.Room {
     private renderer = new Render.RenderList();
 
     public BackgroundLayer = new Render.Layer(-1, 0);
+
     public DropLayer = new Render.Layer(0, 0);
+
     public RoomLayer = new Render.Layer(1, 0);
+
+    public ObjectBgLayer = new Render.Layer(1.9, 0);
     public ObjectLayer = new Render.Layer(2, 0);
+
+    public TextboxBgLayer = new Render.Layer(2.9, 0);
     public TextboxLayer = new Render.Layer(3, 0);
+
     public CursorLayer = new Render.Layer(10, 0);
 
     private SlideSystem = new Slide.SlideSystem();
@@ -95,7 +102,11 @@ class GuiRoom<State> extends ECS.Room {
     };
 
     showMessageBox(message: string, callback: () => void = null) {
-        Textbox.MessageBox(this.Entities, this.TextboxLayer, message, callback);
+        Textbox.MessageBox(
+            this.Entities,
+            this.TextboxBgLayer, this.TextboxLayer,
+            message, callback
+        );
     };
 
     makeDummyObject(color: string, x: number, y: number, label: string) {
