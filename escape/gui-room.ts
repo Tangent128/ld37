@@ -83,8 +83,8 @@ class GuiRoom<State> extends ECS.Room {
         this.renderer.drawTo(cx);
     };
 
-    showMessageBox(message: string) {
-        Textbox.MessageBox(this.Entities, this.TextboxLayer, message);
+    showMessageBox(message: string, callback: () => void = null) {
+        Textbox.MessageBox(this.Entities, this.TextboxLayer, message, callback);
     };
 
     makeDummyObject(color: string, x: number, y: number, label: string) {

@@ -54,7 +54,8 @@ namespace Textbox {
     export function MessageBox(
         entities: ECS.Entity[],
         layer: Render.Layer,
-        text: string
+        text: string,
+        callback: () => void = null
     ) {
 
         let root = {
@@ -85,6 +86,9 @@ namespace Textbox {
                     root.deleted = true;
                     message.deleted = true;
                     dismissButton.deleted = true;
+                    if(callback) {
+                        callback();
+                    }
                 })
             )
         };
