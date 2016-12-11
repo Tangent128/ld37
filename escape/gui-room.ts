@@ -49,6 +49,7 @@ class GuiRoom<State> extends ECS.Room {
 
     public DropLayer = new Render.Layer(0, 0);
     public RoomLayer = new Render.Layer(1, 0);
+    public ObjectLayer = new Render.Layer(2, 0);
     public TextboxLayer = new Render.Layer(3, 0);
     public CursorLayer = new Render.Layer(10, 0);
 
@@ -109,7 +110,8 @@ class GuiRoom<State> extends ECS.Room {
 
         this.Entities.push(entity);
         return entity as (
-            ECS.HasLocation
+            ECS.Entity
+            & ECS.HasLocation
             & RenderDebug.HasBox
             & Textbox.HasText
             & Mouse.HasTarget

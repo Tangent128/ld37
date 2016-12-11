@@ -68,6 +68,52 @@ function GenerateDropTarget(
     PopulateDropTarget(room, list, target);
 };
 
+function ToObjectLayer(room: GuiRoom<GameState>, entity: any) {
+    if(Mouse.HasTarget(entity)) {
+        entity.ClickTarget.layer = Mouse.UiLayer.Object;
+    }
+    if(RenderDebug.HasBox(entity)) {
+        entity.RenderDebugBox.Layer = room.ObjectLayer;
+    }
+    if(Textbox.HasText(entity)) {
+        entity.RenderText.Layer = room.ObjectLayer;
+    }
+};
+
+function PopupTimeMachine(room: GuiRoom<GameState>) {
+    let root = room.makeDummyObject("#40a", 750, 150, "Time Machine");
+    ToObjectLayer(room, root);
+    Slide.Slide(root, 200, 250, 40);
+
+    // buttons
+    let alchemy = room.makeDummyObject("#880", 0, 0, "Alchemy");
+    ToObjectLayer(room, alchemy);
+    Pin.Attach(root, alchemy, 150, -70);
+
+    let present = room.makeDummyObject("#fcc", 0, 0, "Present");
+    ToObjectLayer(room, present);
+    Pin.Attach(root, present, 150, 0);
+
+    let future = room.makeDummyObject("#0fa", 0, 0, "Future");
+    ToObjectLayer(room, future);
+    Pin.Attach(root, future, 150, 70);
+
+    let back = room.makeDummyObject("#440", 0, 0, "Cancel");
+    ToObjectLayer(room, back);
+    Pin.Attach(root, back, 70, 70);
+    room.onClick(back, clickedBy => {
+        if(clickedBy == null) {
+            Slide.Slide(root, -250, 250, 40, () => {
+                root.deleted = true;
+                alchemy.deleted = true;
+                present.deleted = true;
+                future.deleted = true;
+                back.deleted = true;
+            });
+        }
+    });
+};
+
 function GenerateRoom(room: GuiRoom<GameState>) {
 
     let state = room.State;
