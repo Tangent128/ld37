@@ -65,16 +65,14 @@ namespace Textbox {
 
         let message = {
             deleted: false,
-            Location: new ECS.Location(0,0),
-            PinTo: new Pin.PinTo(root, 0, -1 * FONT_SIZE),
             RenderText: new Text(layer, text)
         };
+
+        Pin.Attach(root, message, 0, -1 * FONT_SIZE);
 
         let dismissBox = new Render.Box(-32, 0, 64, 16);
         let dismissButton = {
             deleted: false,
-            Location: new ECS.Location(0,0),
-            PinTo: new Pin.PinTo(root, 0, -1 * FONT_SIZE),
             RenderDebugBox: new RenderDebug.Box(
                 layer,
                 dismissBox,
@@ -95,6 +93,8 @@ namespace Textbox {
                 }
             )
         };
+
+        Pin.Attach(root, dismissButton, 0, -1 * FONT_SIZE);
 
         entities.push(root, message, dismissButton);
     };

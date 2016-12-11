@@ -60,4 +60,9 @@ namespace Pin {
 
     };
 
+    export function Attach(parent: ECS.HasLocation, child: any, x: number, y: number) {
+        child.Location = new ECS.Location(0,0);
+        child.PinTo = new PinTo(parent, x, y);
+    };
+
 };
