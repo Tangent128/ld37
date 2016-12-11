@@ -53,7 +53,9 @@ namespace Mouse {
             let x = event.offsetX;
             let y = event.offsetY;
 
-            let targets = this.room.Entities.filter(HasTarget) as HasTarget[];
+            let targets = this.room.Entities.filter(entity => {
+                return HasTarget(entity) && ! IsCursor(entity)
+            }) as HasTarget[];
 
             let topLayer = targets
                 .map(entity => entity.ClickTarget.layer)
