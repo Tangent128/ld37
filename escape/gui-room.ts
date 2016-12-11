@@ -190,6 +190,10 @@ class GuiRoom<State> extends ECS.Room {
         };
 
         this.Entities.push(entity);
-        return entity;
+        return entity as (
+            ECS.Entity
+            & RenderDebug.HasBox
+            & Mouse.HasTarget
+        );
     };
 };
