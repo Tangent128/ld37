@@ -340,7 +340,8 @@ function GenerateRoom(room: GuiRoom<GameState>) {
                 GenerateItem(room, "#4a0", 450, 100, "Beanstalk");
             }
 
-            GenerateDropTarget(room, State.PresentDesk, new Render.Box(300,150, 128,25));
+            GenerateDropTarget(room, State.PresentTable, new Render.Box(220,124, 142,28));
+            GenerateDropTarget(room, State.PresentDesk, new Render.Box(261,176, 49,85));
 
             GenerateClickZone(room, 428, 198, 57, 103, clickedBy => {
                 if(clickedBy == null) {

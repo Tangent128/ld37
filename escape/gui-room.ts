@@ -170,7 +170,7 @@ class GuiRoom<State> extends ECS.Room {
             RenderDebugBox: new RenderDebug.Box(
                 this.DropLayer,
                 bounds,
-                "#999"
+                "rgba(150,150,150,0.5)"
             ),
             ClickTarget: new Mouse.ClickTarget(
                 clickLayer,
