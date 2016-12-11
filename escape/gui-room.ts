@@ -86,8 +86,7 @@ class GuiRoom<State> extends ECS.Room {
         Textbox.MessageBox(this.Entities, this.TextboxLayer, message);
     };
 
-    makeDummyObject(color: string, x: number, y: number, label: string)
-        : RenderDebug.HasBox & Textbox.HasText {
+    makeDummyObject(color: string, x: number, y: number, label: string) {
         let bounds = new Render.Box(-16, -16, 32, 32);
         let entity = {
             Location: new ECS.Location(x, y),
@@ -109,7 +108,12 @@ class GuiRoom<State> extends ECS.Room {
         });
 
         this.Entities.push(entity);
-        return entity;
+        return entity as (
+            ECS.HasLocation
+            & RenderDebug.HasBox
+            & Textbox.HasText
+            & Mouse.HasTarget
+        );
     };
 
     onClick(entity: RenderDebug.HasBox, callback: (clicked: Mouse.IsCursor) => void) {

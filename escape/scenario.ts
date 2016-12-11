@@ -38,6 +38,7 @@ function PopulateItem(
     let entity = room.makeDummyObject(color, x, y, name);
     room.assignInventoryItem(entity, type, list);
     MarkGenerated(entity);
+    return entity;
 };
 
 function PopulateDropTarget(
@@ -50,7 +51,8 @@ function PopulateDropTarget(
     let y = bounds.y + bounds.h / 2;
 
     list.map(item => {
-        PopulateItem(room, item, x, y, list);
+        let entity = PopulateItem(room, item, x, y, list);
+        entity.ClickTarget.layer = target.ClickTarget.layer;
         x = x + 32;
     });
 };
