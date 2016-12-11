@@ -54,6 +54,8 @@ class GameState {
     PresentBgBean = RenderImage.load("img/wbeanstalk.png");
     FutureBg = RenderImage.load("img/future.png");
     FutureBgDino = RenderImage.load("img/wskel.png");
+
+    DialogBg = RenderImage.load("img/dialog.png");
 };
 
 interface IsGenerated {
@@ -113,6 +115,9 @@ function PopulateItem(
         case InventoryItemType.Shovel:
             color = "#888";
             break;
+        case InventoryItemType.Seed:
+            color = "#0f0";
+            break;
     }
 
     let entity = GenerateItem(room, color, x, y, name);
@@ -148,7 +153,8 @@ function GenerateDropTarget(
     uiLayer = Mouse.UiLayer.Room,
     renderLayer: Render.Layer = null
 ) {
-    let target = room.makeInventoryDropper(bounds, list, uiLayer);
+    renderLayer = renderLayer || room.RoomLayer;
+    let target = room.makeInventoryDropper(bounds, list, uiLayer, renderLayer);
     MarkGenerated(target);
 
     PopulateDropTarget(room, list, target, renderLayer);
@@ -229,70 +235,53 @@ function PopupTimeMachine(room: GuiRoom<GameState>) {
     };
 };
 
-function PopupTimeCapsule(room: GuiRoom<GameState>) {
+function PopupItemBox(
+    room: GuiRoom<GameState>,
+    list: InventoryItemType[],
+    text: string
+) {
     let cancel: Function;
 
-    let root = room.makeDummyObject("#40a", 200, 150, "Time capsule");
-    ToObjectLayer(room, root);
+    let root = {
+        Generated: true,
+        Location: new ECS.Location(0, 0),
+        RenderImage: new RenderImage.RenderImage(
+            room.ObjectBgLayer, room.State.DialogBg,
+            0, 0, 500, 400
+        )
+    };
+    room.add(root);
+
+    let message = {
+        Generated: true,
+        Location: new ECS.Location(250, 50+16),
+        RenderText: new Textbox.Text(room.ObjectLayer, text)
+    };
+    room.add(message);
 
     let contents = GenerateDropTarget(
-        room, room.State.FutureVault,
-        new Render.Box(200, 200, 80, 32),
+        room, list,
+        new Render.Box(200, 180, 100, 30),
         Mouse.UiLayer.Object,
         room.ObjectLayer
     );
     ToObjectLayer(room, contents);
 
-    let back = room.makeDummyObject("#440", 270, 170, "Close");
-    ToObjectLayer(room, back);
-    room.onClick(back, clickedBy => {
-        if(clickedBy == null) {
-            cancel();
-        }
-    });
-
-    cancel = () => {
-        root.deleted = true;
-        back.deleted = true;
-        GenerateRoom(room);
-    };
-};
-
-function PopupSeedVault(room: GuiRoom<GameState>) {
-    let cancel: Function;
-
-    let funded = room.State.PresentDesk.indexOf(InventoryItemType.Gold) >= 0;
-
-    let label = funded
-        ? "Seed Vault! Well funded with lots of seeds!"
-        : "Seed Vault! No actual seeds, alas. Budget cuts.";
-
-    let root = room.makeDummyObject("#40a", 200, 150, label);
-    ToObjectLayer(room, root);
-
-    if(funded) {
-        let vault = GenerateDropTarget(
-            room, room.State.FutureVault,
-            new Render.Box(200, 200, 80, 32),
+    let dismissBox = new Render.Box(210, 225, 80, 30);
+    let back = {
+        Generated: true,
+        ClickTarget: new Mouse.ClickTarget(
             Mouse.UiLayer.Object,
-            room.ObjectLayer
-        );
-        ToObjectLayer(room, vault);
-    }
-
-    let back = room.makeDummyObject("#440", 270, 170, "Close");
-    ToObjectLayer(room, back);
-    room.onClick(back, clickedBy => {
-        if(clickedBy == null) {
-            cancel();
-        }
-    });
-
-    cancel = () => {
-        root.deleted = true;
-        back.deleted = true;
-        GenerateRoom(room);
+            dismissBox,
+            clickedBy => {
+                if (clickedBy == null) {
+                    GenerateRoom(room);
+                }
+            }
+        )
     };
+    room.add(back);
+
 };
 
 function GenerateRoom(room: GuiRoom<GameState>) {
@@ -307,6 +296,8 @@ function GenerateRoom(room: GuiRoom<GameState>) {
     });
 
     // calc flags
+    let funded = room.State.PresentDesk.indexOf(InventoryItemType.Gold) >= 0;
+
     let seedPlanted = State.PastHole.indexOf(InventoryItemType.Seed) > -1;
 
     let background: HTMLImageElement = null;
@@ -354,7 +345,13 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             GenerateItem(room, "#44f", 450, 100, "Seed Vault", clickedBy => {
                 if(clickedBy == null) {
-                    PopupSeedVault(room);
+                    if(funded) {
+                        PopupItemBox(room, room.State.FutureVault,
+                            "Seed Vault! Well funded with lots of seeds!");
+                    } else {
+                        room.showMessageBox(
+                            "Seed Vault! No actual seeds, alas. Budget cuts.");
+                    }
                 }
             });
 
@@ -395,7 +392,7 @@ function ResetGame(room: GuiRoom<GameState>) {
     room.State.InventoryBox = room.makeInventoryDropper(
         new Render.Box(0,300, 500,100),
         room.State.Inventory,
-        null
+        null, room.RoomLayer
     );
 
     GenerateRoom(room);
