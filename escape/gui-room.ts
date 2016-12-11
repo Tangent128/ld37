@@ -3,6 +3,7 @@
 /// <reference path="./pin.ts" />
 /// <reference path="./slide.ts" />
 /// <reference path="./textbox.ts" />
+/// <reference path="./image.ts" />
 
 enum InventoryItemType {
     Shovel,
@@ -54,6 +55,7 @@ function IsInventoryItem(entity: any, type: InventoryItemType) {
 class GuiRoom<State> extends ECS.Room {
     private renderer = new Render.RenderList();
 
+    public BackgroundLayer = new Render.Layer(-1, 0);
     public DropLayer = new Render.Layer(0, 0);
     public RoomLayer = new Render.Layer(1, 0);
     public ObjectLayer = new Render.Layer(2, 0);
@@ -65,6 +67,7 @@ class GuiRoom<State> extends ECS.Room {
 
     private DebugRenderSystem = new RenderDebug.System(this.renderer);
     private TextRenderSystem = new Textbox.RenderTextSystem(this.renderer);
+    private ImageRenderSystem = new RenderImage.RenderImageSystem(this.renderer);
 
     constructor(
         fps: number,
@@ -86,6 +89,7 @@ class GuiRoom<State> extends ECS.Room {
 
         this.DebugRenderSystem.run(this.Entities);
         this.TextRenderSystem.run(this.Entities);
+        this.ImageRenderSystem.run(this.Entities);
 
         this.renderer.drawTo(cx);
     };
