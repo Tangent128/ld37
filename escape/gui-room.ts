@@ -120,15 +120,21 @@ class GuiRoom<State> extends ECS.Room {
         )
     };
 
-    assignInventoryItem(entity: any, type: InventoryItemType) {
+    assignInventoryItem(
+        entity: any,
+        type: InventoryItemType,
+        existingList: InventoryItemType[] = null
+    ) {
         if(HasInventoryItem(entity)) {
             let list = entity.InventoryItem.remove();
             entity.InventoryItem.Type = type;
-            if(list) {
-                entity.InventoryItem.addTo(list);
+            if(existingList || list) {
+                entity.InventoryItem.addTo(existingList || list);
             }
         } else {
-            entity.InventoryItem = new InventoryItem(type);
+            let inventoryItem = new InventoryItem(type);
+            inventoryItem.List = existingList;
+            entity.InventoryItem = inventoryItem;
         }
     };
 
