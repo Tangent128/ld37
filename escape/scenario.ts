@@ -20,7 +20,13 @@ class GameState {
     // future
 
     // misc
-    Inventory = new Array<InventoryItemType>();
+    Inventory = [
+        InventoryItemType.Shovel,
+        InventoryItemType.Screwdriver,
+        InventoryItemType.Seed,
+        InventoryItemType.Lead,
+        InventoryItemType.Gold
+    ];
 
     // permanent objects
     InventoryBox: Mouse.HasTarget;
@@ -194,6 +200,8 @@ function ResetGame(room: GuiRoom<GameState>) {
         entity.deleted = true;
     });
 
+    room.State = new GameState();
+
     let triggerBox = room.makeDummyObject("#000", 0, 0, "Trigger");
     room.onClick(triggerBox, clickedWith => {
         if(clickedWith == null) {
@@ -202,14 +210,6 @@ function ResetGame(room: GuiRoom<GameState>) {
     });
 
     let State = room.State;
-
-    State.Inventory = [
-        InventoryItemType.Shovel,
-        InventoryItemType.Screwdriver,
-        InventoryItemType.Seed,
-        InventoryItemType.Lead,
-        InventoryItemType.Gold
-    ];
 
     State.InventoryBox = room.makeInventoryDropper(
         new Render.Box(0,300, 500,100),
