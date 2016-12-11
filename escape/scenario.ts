@@ -13,12 +13,14 @@ class GameState {
     TimePeriod = TimePeriod.Present;
 
     // past
+    PastTable = new Array<InventoryItemType>();
+    PastHole = new Array<InventoryItemType>();
 
     // present
     PresentDesk = new Array<InventoryItemType>();
 
     // future
-    Vault = [
+    FutureVault = [
         InventoryItemType.Seed,
     ];
 
@@ -200,7 +202,7 @@ function PopupSeedVault(room: GuiRoom<GameState>) {
 
     if(funded) {
         let vault = GenerateDropTarget(
-            room, room.State.Vault,
+            room, room.State.FutureVault,
             new Render.Box(200, 200, 80, 32),
             Mouse.UiLayer.Object,
             room.ObjectLayer
@@ -234,13 +236,24 @@ function GenerateRoom(room: GuiRoom<GameState>) {
         }
     });
 
+    // calc flags
+    let seedPlanted = State.PastHole.indexOf(InventoryItemType.Seed) > -1;
+
+    // add items
     switch(State.TimePeriod) {
         case TimePeriod.Alchemy:
+
+            GenerateDropTarget(room, State.PastHole, new Render.Box(250,200, 25,25));
+
             break;
 
         case TimePeriod.Present:
 
             GenerateItem(room, "#444", 450, 30, "Ventilation Duct", clickedBy => {
+                if(!seedPlanted) {
+                    room.showMessageBox("It's out of reach!");
+                    return;
+                }
                 if(IsInventoryItem(clickedBy, InventoryItemType.Screwdriver)) {
                     room.showMessageBox("Working the grate off with the screwdriver, you open up a path to freedom!", () => {
                         ResetGame(room);
@@ -249,6 +262,10 @@ function GenerateRoom(room: GuiRoom<GameState>) {
                     room.showMessageBox("The grate's screwed on tightly.");
                 }
             });
+
+            if(seedPlanted) {
+                GenerateItem(room, "#4a0", 450, 100, "Beanstalk");
+            }
 
             GenerateDropTarget(room, State.PresentDesk, new Render.Box(300,150, 128,25));
 
