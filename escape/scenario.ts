@@ -59,6 +59,27 @@ function MarkGenerated(entity: any) {
     entity.Generated = true;
 };
 
+function GenerateClickZone(
+    room: GuiRoom<GameState>,
+    x: number, y: number, w: number, h: number,
+    callback: (clickedBy: Mouse.IsCursor) => void = (clickedBy) => {},
+    uiLayer = Mouse.UiLayer.Room,
+    renderLayer = null
+) {
+    renderLayer = renderLayer || room.RoomLayer;
+
+    let bounds = new Render.Box(0,0,w,h);
+
+    let entity = {
+        Location: new ECS.Location(x, y),
+        Generated: true,
+        ClickTarget: new Mouse.ClickTarget(uiLayer, bounds, callback),
+        RenderDebugBox: new RenderDebug.Box(renderLayer, bounds, "rgba(255,0,0,0.5)")
+    };
+    room.add(entity);
+    return entity;
+};
+
 function GenerateItem(
     room: GuiRoom<GameState>,
     color: string, x: number, y: number, label: string,
@@ -321,7 +342,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             GenerateDropTarget(room, State.PresentDesk, new Render.Box(300,150, 128,25));
 
-            GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
+            GenerateClickZone(room, 428, 198, 57, 103, clickedBy => {
                 if(clickedBy == null) {
                     PopupTimeMachine(room);
                 }
