@@ -45,6 +45,8 @@ class GameState {
 
     // permanent objects
     InventoryBox: Mouse.HasTarget;
+
+    PresentBg = RenderImage.load("img/present.png");
 };
 
 interface IsGenerated {
@@ -279,6 +281,8 @@ function GenerateRoom(room: GuiRoom<GameState>) {
     // calc flags
     let seedPlanted = State.PastHole.indexOf(InventoryItemType.Seed) > -1;
 
+    let background: HTMLImageElement = null;
+
     // add items
     switch(State.TimePeriod) {
         case TimePeriod.Alchemy:
@@ -294,6 +298,8 @@ function GenerateRoom(room: GuiRoom<GameState>) {
             break;
 
         case TimePeriod.Present:
+
+            background = State.PresentBg;
 
             GenerateItem(room, "#444", 450, 30, "Ventilation Duct", clickedBy => {
                 if(!seedPlanted) {
@@ -343,6 +349,17 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
     // regenerate inventory
     PopulateDropTarget(room, State.Inventory, State.InventoryBox);
+
+    // background
+    if(background) {
+        room.add({
+            RenderImage: new RenderImage.RenderImage(
+                room.BackgroundLayer, background,
+                0, 0, 500, 400
+            ),
+            Generated: true
+        });
+    }
 };
 
 function ResetGame(room: GuiRoom<GameState>) {
