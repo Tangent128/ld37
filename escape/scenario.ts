@@ -46,7 +46,13 @@ class GameState {
     // permanent objects
     InventoryBox: Mouse.HasTarget;
 
+    AlchemyBg = RenderImage.load("img/alchemy.png");
+    AlchemyBgCapsule = RenderImage.load("img/wcapsule.png");
     PresentBg = RenderImage.load("img/present.png");
+    PresentBgDino = RenderImage.load("img/wdino.png");
+    PresentBgBean = RenderImage.load("img/wbeanstalk.png");
+    FutureBg = RenderImage.load("img/future.png");
+    FutureBgDino = RenderImage.load("img/wskel.png");
 };
 
 interface IsGenerated {
