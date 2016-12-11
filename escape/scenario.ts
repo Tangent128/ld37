@@ -285,6 +285,12 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             GenerateDropTarget(room, State.PastHole, new Render.Box(250,200, 25,25));
 
+            GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
+                if(clickedBy == null) {
+                    PopupTimeMachine(room);
+                }
+            });
+
             break;
 
         case TimePeriod.Present:
@@ -309,6 +315,12 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             GenerateDropTarget(room, State.PresentDesk, new Render.Box(300,150, 128,25));
 
+            GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
+                if(clickedBy == null) {
+                    PopupTimeMachine(room);
+                }
+            });
+
             break;
 
         case TimePeriod.Future:
@@ -318,6 +330,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
                     PopupSeedVault(room);
                 }
             });
+
             GenerateItem(room, "#aa0", 450, 270, "Time Machine", clickedBy => {
                 if(clickedBy == null) {
                     PopupTimeMachine(room);
@@ -341,16 +354,7 @@ function ResetGame(room: GuiRoom<GameState>) {
 
     room.State = new GameState();
 
-    let triggerBox = room.makeDummyObject("#000", 0, 0, "Trigger");
-    room.onClick(triggerBox, clickedWith => {
-        if(clickedWith == null) {
-            PopupTimeMachine(room);
-        }
-    });
-
-    let State = room.State;
-
-    State.InventoryBox = room.makeInventoryDropper(
+    room.State.InventoryBox = room.makeInventoryDropper(
         new Render.Box(0,300, 500,100),
         room.State.Inventory,
         null
