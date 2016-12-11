@@ -3,6 +3,8 @@
 /// <reference path="./gui-room.ts" />
 
 class GameState {
+    spotA = new Array<InventoryItemType>();
+    spotB = new Array<InventoryItemType>();
 };
 
 function ResetGame(room: GuiRoom<GameState>) {
@@ -36,6 +38,11 @@ function ResetGame(room: GuiRoom<GameState>) {
     let slideBehavior = new Slide.SlideBehavior(150, 150);
     (slideBox as any as Slide.HasSlideBehavior).SlideBehavior = slideBehavior;
 
-    room.addDropTarget(new ECS.Location(200, 200));
-    room.addDropTarget(new ECS.Location(300, 120));
+    room.assignInventoryItem(slideBox, InventoryItemType.Seed);
+
+    let blahBox = room.makeDummyObject("#80f", 400, 220, "Shovel");
+    room.assignInventoryItem(blahBox, InventoryItemType.Shovel);
+
+    room.makeInventoryDropper(new ECS.Location(200, 200), room.State.spotA);
+    room.makeInventoryDropper(new ECS.Location(300, 120), room.State.spotB);
 };

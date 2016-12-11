@@ -4,6 +4,46 @@
 /// <reference path="./slide.ts" />
 /// <reference path="./textbox.ts" />
 
+enum InventoryItemType {
+    Shovel,
+    Screwdriver,
+    Lead,
+    Gold,
+    Seed
+};
+class InventoryItem {
+
+    public List: InventoryItemType[] = null;
+
+    constructor(
+        public Type: InventoryItemType
+    ) { };
+
+    remove() {
+        if (this.List) {
+            let index = this.List.indexOf(this.Type);
+            if (index >= 0) {
+                this.List.splice(index, 1);
+            }
+        }
+        let oldList = this.List;
+        this.List = null;
+        return oldList;
+    };
+    addTo(list: InventoryItemType[]) {
+        this.remove();
+        this.List = list;
+        list.push(this.Type);
+    };
+};
+interface HasInventoryItem {
+    InventoryItem: InventoryItem
+};
+function HasInventoryItem(entity: any): entity is HasInventoryItem {
+    return entity.InventoryItem != null;
+};
+
+
 class GuiRoom<State> extends ECS.Room {
     private renderer = new Render.RenderList();
 
@@ -59,9 +99,10 @@ class GuiRoom<State> extends ECS.Room {
         };
 
         this.onClick(entity, clickedWith => {
-            if (clickedWith == null) {
+            if (clickedWith == null && HasInventoryItem(entity)) {
                 entity.RenderDebugBox.Layer = this.CursorLayer;
                 entity.RenderText.Layer = this.CursorLayer;
+                entity.InventoryItem.remove();
                 Mouse.MakeCursor(entity);
             }
         });
@@ -78,7 +119,19 @@ class GuiRoom<State> extends ECS.Room {
         )
     };
 
-    addDropTarget(location: ECS.Location) {
+    assignInventoryItem(entity: any, type: InventoryItemType) {
+        if(HasInventoryItem(entity)) {
+            let list = entity.InventoryItem.remove();
+            entity.InventoryItem.Type = type;
+            if(list) {
+                entity.InventoryItem.addTo(list);
+            }
+        } else {
+            entity.InventoryItem = new InventoryItem(type);
+        }
+    };
+
+    makeInventoryDropper(location: ECS.Location, list: InventoryItemType[]) {
         let bounds = new Render.Box(-64, -12, 128, 24);
         let entity = {
             Location: location,
@@ -91,13 +144,14 @@ class GuiRoom<State> extends ECS.Room {
                 Mouse.UiLayer.Room,
                 bounds,
                 clickedWith => {
-                    if (clickedWith != null) {
+                    if (clickedWith != null && HasInventoryItem(clickedWith)) {
                         if (RenderDebug.HasBox(clickedWith)) {
                             clickedWith.RenderDebugBox.Layer = this.RoomLayer;
                         }
                         if (Textbox.HasText(clickedWith)) {
                             clickedWith.RenderText.Layer = this.RoomLayer;
                         }
+                        clickedWith.InventoryItem.addTo(list);
                         Mouse.CancelCursor(clickedWith);
                     }
                 }
