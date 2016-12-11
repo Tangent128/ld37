@@ -88,7 +88,7 @@ class GuiRoom<State> extends ECS.Room {
     };
 
     makeDummyObject(color: string, x: number, y: number, label: string) {
-        let bounds = new Render.Box(-16, -16, 32, 32);
+        let bounds = new Render.Box(-16, 0, 32, 20);
         let entity = {
             Location: new ECS.Location(x, y),
             RenderDebugBox: new RenderDebug.Box(
