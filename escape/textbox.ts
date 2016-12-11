@@ -22,7 +22,14 @@ namespace Textbox {
             cx.textBaseline = "bottom";
 
             this.Location.transformCx(cx);
-            cx.fillText(this.Text, 0, 0);
+
+            let lines = this.Text.split("\n");
+            let y = -(lines.length - 1) * FONT_SIZE;
+
+            lines.map(line => {
+                cx.fillText(line, 0, y);
+                y += FONT_SIZE;
+            });
         };
     };
     export interface HasText {

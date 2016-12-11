@@ -295,7 +295,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
                     return;
                 }
                 if(IsInventoryItem(clickedBy, InventoryItemType.Screwdriver)) {
-                    room.showMessageBox("Working the grate off with the screwdriver, you open up a path to freedom!", () => {
+                    room.showMessageBox("Working the grate off with the screwdriver,\nyou open up a path to freedom!", () => {
                         ResetGame(room);
                     });
                 } else {
