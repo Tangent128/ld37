@@ -42,6 +42,19 @@ function MarkGenerated(entity: any) {
     entity.Generated = true;
 };
 
+function GenerateItem(
+    room: GuiRoom<GameState>,
+    color: string, x: number, y: number, label: string,
+    callback: (clickedBy: Mouse.IsCursor) => void = null
+) {
+    let entity = room.makeDummyObject(color, x, y, label);
+    MarkGenerated(entity);
+    if(callback) {
+        room.onClick(entity, callback);
+    }
+    return entity;
+};
+
 function PopulateItem(
     room: GuiRoom<GameState>,
     type: InventoryItemType,
@@ -57,9 +70,8 @@ function PopulateItem(
             break;
     }
 
-    let entity = room.makeDummyObject(color, x, y, name);
+    let entity = GenerateItem(room, color, x, y, name);
     room.assignInventoryItem(entity, type, list);
-    MarkGenerated(entity);
     return entity;
 };
 
