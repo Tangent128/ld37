@@ -42,7 +42,7 @@ namespace ECS {
         constructor(public fps: number) {
         };
 
-        public add(entity: Entity) {
+        public add(entity: any) {
             this.Entities.push(entity);
         };
 
