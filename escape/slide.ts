@@ -43,4 +43,14 @@ namespace Slide {
 
     };
 
+    export function Slide(
+        entity: ECS.HasLocation,
+        x: number, y: number,
+        speed: number,
+        callback = () => {}
+    ) {
+        let slideBehavior = new SlideBehavior(x, y, speed, callback);
+        (entity as any as HasSlideBehavior).SlideBehavior = slideBehavior;
+    };
+
 };

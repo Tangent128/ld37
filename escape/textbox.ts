@@ -42,7 +42,7 @@ namespace Textbox {
         };
 
         process(entity: HasText) {
-            if(ECS.HasLocation(entity)) {
+            if (ECS.HasLocation(entity)) {
                 entity.RenderText.Location = entity.Location;
             }
             this.renderer.add(entity.RenderText);
@@ -59,9 +59,9 @@ namespace Textbox {
 
         let root = {
             deleted: false,
-            Location: new ECS.Location(750, 150),
-            SlideBehavior: new Slide.SlideBehavior(250, 150, SLIDE_SPEED)
+            Location: new ECS.Location(750, 150)
         };
+        Slide.Slide(root, 250, 150, SLIDE_SPEED);
 
         let message = {
             deleted: false,
@@ -81,16 +81,11 @@ namespace Textbox {
             ClickTarget: new Mouse.ClickTarget(
                 Mouse.UiLayer.Textbox,
                 dismissBox,
-                clickedWith => {
-                    root.SlideBehavior = new Slide.SlideBehavior(
-                        -250, 0, SLIDE_SPEED,
-                        () => {
-                            root.deleted = true;
-                            message.deleted = true;
-                            dismissButton.deleted = true;
-                        }
-                    )
-                }
+                clickedWith => Slide.Slide(root, -250, 150, SLIDE_SPEED, () => {
+                    root.deleted = true;
+                    message.deleted = true;
+                    dismissButton.deleted = true;
+                })
             )
         };
 
