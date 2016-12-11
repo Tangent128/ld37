@@ -3,11 +3,10 @@
 /// <reference path="./gui-room.ts" />
 
 class GameState {
-    Shelf = new Array<InventoryItemType>();
+    Desk = new Array<InventoryItemType>();
     Inventory = new Array<InventoryItemType>();
 
     // permanent objects
-    ShelfBox: Mouse.HasTarget;
     InventoryBox: Mouse.HasTarget;
 };
 
@@ -56,6 +55,17 @@ function PopulateDropTarget(
     });
 };
 
+function GenerateDropTarget(
+    room: GuiRoom<GameState>,
+    list: InventoryItemType[],
+    bounds: Render.Box
+) {
+    let target = room.makeInventoryDropper(bounds, list);
+    MarkGenerated(target);
+
+    PopulateDropTarget(room, list, target);
+};
+
 function GenerateRoom(room: GuiRoom<GameState>) {
 
     let state = room.State;
@@ -68,7 +78,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
     });
 
     // shelf
-    PopulateDropTarget(room, state.Shelf, state.ShelfBox);
+    GenerateDropTarget(room, state.Desk, new Render.Box(300,150, 128,25));
 
     // regenerate inventory
     PopulateDropTarget(room, state.Inventory, state.InventoryBox);
@@ -95,10 +105,6 @@ function ResetGame(room: GuiRoom<GameState>) {
         InventoryItemType.Gold
     ];
 
-    State.ShelfBox = room.makeInventoryDropper(
-        new Render.Box(300,150, 128,25),
-        room.State.Shelf
-    );
     State.InventoryBox = room.makeInventoryDropper(
         new Render.Box(0,300, 500,100),
         room.State.Inventory,
