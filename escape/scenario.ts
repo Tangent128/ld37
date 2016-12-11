@@ -15,7 +15,7 @@ class GameState {
     // past
 
     // present
-    Desk = new Array<InventoryItemType>();
+    PresentDesk = new Array<InventoryItemType>();
 
     // future
     Vault = [
@@ -189,18 +189,24 @@ function PopupTimeMachine(room: GuiRoom<GameState>) {
 function PopupSeedVault(room: GuiRoom<GameState>) {
     let cancel: Function;
 
-    let label = "Seed Vault! Well funded with lots of seeds!";
+    let funded = room.State.PresentDesk.indexOf(InventoryItemType.Gold) >= 0;
+
+    let label = funded
+        ? "Seed Vault! Well funded with lots of seeds!"
+        : "Seed Vault! No actual seeds, alas. Budget cuts.";
 
     let root = room.makeDummyObject("#40a", 200, 150, label);
     ToObjectLayer(room, root);
 
-    let vault = GenerateDropTarget(
-        room, room.State.Vault,
-        new Render.Box(200, 200, 80, 32),
-        Mouse.UiLayer.Object,
-        room.ObjectLayer
-    );
-    ToObjectLayer(room, vault);
+    if(funded) {
+        let vault = GenerateDropTarget(
+            room, room.State.Vault,
+            new Render.Box(200, 200, 80, 32),
+            Mouse.UiLayer.Object,
+            room.ObjectLayer
+        );
+        ToObjectLayer(room, vault);
+    }
 
     let back = room.makeDummyObject("#440", 270, 170, "Close");
     ToObjectLayer(room, back);
@@ -244,7 +250,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
                 }
             });
 
-            GenerateDropTarget(room, State.Desk, new Render.Box(300,150, 128,25));
+            GenerateDropTarget(room, State.PresentDesk, new Render.Box(300,150, 128,25));
 
             break;
 
