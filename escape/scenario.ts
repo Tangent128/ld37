@@ -3,56 +3,107 @@
 /// <reference path="./gui-room.ts" />
 
 class GameState {
-    spotA = new Array<InventoryItemType>();
-    inventory = new Array<InventoryItemType>();
+    Shelf = new Array<InventoryItemType>();
+    Inventory = new Array<InventoryItemType>();
+
+    // permanent objects
+    ShelfBox: Mouse.HasTarget;
+    InventoryBox: Mouse.HasTarget;
 };
+
+interface IsGenerated {
+    Generated: true
+};
+function IsGenerated(entity: any): entity is IsGenerated {
+    return entity.Generated == true;
+};
+function MarkGenerated(entity: any) {
+    entity.Generated = true;
+};
+
+function PopulateItem(
+    room: GuiRoom<GameState>,
+    type: InventoryItemType,
+    x: number, y: number,
+    list: InventoryItemType[]
+) {
+    let color = "#000";
+    let name = InventoryItemType[type];
+
+    switch (type) {
+        case InventoryItemType.Shovel:
+            color = "#888";
+            break;
+    }
+
+    let entity = room.makeDummyObject(color, x, y, name);
+    room.assignInventoryItem(entity, type, list);
+    MarkGenerated(entity);
+};
+
+function PopulateDropTarget(
+    room: GuiRoom<GameState>,
+    list: InventoryItemType[],
+    target: Mouse.HasTarget
+) {
+    let bounds = target.ClickTarget.bounds;
+    let x = bounds.x;
+    let y = bounds.y + bounds.h / 2;
+
+    list.map(item => {
+        PopulateItem(room, item, x, y, list);
+        x = x + 32;
+    });
+};
+
+function GenerateRoom(room: GuiRoom<GameState>) {
+
+    let state = room.State;
+
+    // remove entities to rebuild
+    room.Entities.map(entity => {
+        if(IsGenerated(entity)) {
+            (entity as ECS.Entity).deleted = true;
+        }
+    });
+
+    // shelf
+    PopulateDropTarget(room, state.Shelf, state.ShelfBox);
+
+    // regenerate inventory
+    PopulateDropTarget(room, state.Inventory, state.InventoryBox);
 };
 
 function ResetGame(room: GuiRoom<GameState>) {
 
     room.Entities.length = 0;
 
-    let toggle1 = room.makeDummyObject("#0f0", 300, 70, "Test Text");
-    room.onClick(toggle1, clickedWith => {
-        if (toggle1.RenderDebugBox.color == "#0f0") {
-            toggle1.RenderDebugBox.color = "#ff0";
-        } else {
-            toggle1.RenderDebugBox.color = "#0f0";
-        }
-    });
-
-    let toggle2 = room.makeDummyObject("#00f", 200, 250, "Test\nMultiline\nText");
-    room.onClick(toggle2, clickedWith => {
-        if (toggle2.RenderDebugBox.color == "#00f") {
-            toggle2.RenderDebugBox.color = "#08f";
-        } else {
-            toggle2.RenderDebugBox.color = "#00f";
-        }
-    });
-
     let triggerBox = room.makeDummyObject("#000", 0, 0, "Trigger");
     room.onClick(triggerBox, clickedWith => {
         if(clickedWith == null) {
-            room.showMessageBox("MessageBox Text");
+            GenerateRoom(room);
         }
     });
 
-    let slideBox = room.makeDummyObject("#0a6", 525, 150, "Slide");
-    let slideBehavior = new Slide.SlideBehavior(150, 150);
-    (slideBox as any as Slide.HasSlideBehavior).SlideBehavior = slideBehavior;
+    let State = room.State;
 
-    room.assignInventoryItem(slideBox, InventoryItemType.Seed);
+    State.Inventory = [
+        InventoryItemType.Shovel,
+        InventoryItemType.Screwdriver,
+        InventoryItemType.Seed,
+        InventoryItemType.Lead,
+        InventoryItemType.Gold
+    ];
 
-    let blahBox = room.makeDummyObject("#80f", 400, 220, "Shovel");
-    room.assignInventoryItem(blahBox, InventoryItemType.Shovel);
-
-    room.makeInventoryDropper(
+    State.ShelfBox = room.makeInventoryDropper(
         new Render.Box(300,150, 128,25),
-        room.State.spotA
+        room.State.Shelf
     );
-    room.makeInventoryDropper(
+    State.InventoryBox = room.makeInventoryDropper(
         new Render.Box(0,300, 500,100),
-        room.State.inventory,
+        room.State.Inventory,
         null
     );
+
+    GenerateRoom(room);
 };
