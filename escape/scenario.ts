@@ -308,7 +308,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             background = State.AlchemyBg;
 
-            GenerateDropTarget(room, State.PastHole, new Render.Box(250,200, 25,25));
+            GenerateDropTarget(room, State.PastHole, new Render.Box(329,254, 37,25));
 
             break;
 
@@ -316,22 +316,33 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             background = State.PresentBg;
 
-            GenerateItem(room, "#444", 450, 30, "Ventilation Duct", clickedBy => {
+            // duct
+            GenerateClickZone(room, 412, 8, 69, 39, clickedBy => {
                 if(!seedPlanted) {
                     room.showMessageBox("It's out of reach!");
                     return;
                 }
                 if(IsInventoryItem(clickedBy, InventoryItemType.Screwdriver)) {
-                    room.showMessageBox("Working the grate off with the screwdriver,\nyou open up a path to freedom!", () => {
-                        ResetGame(room);
-                    });
+                    room.showMessageBox(
+`Working the grate off with the screwdriver,
+you open up a path to freedom!
+
+You Win!`, () => ResetGame(room));
                 } else {
                     room.showMessageBox("The grate's screwed on tightly.");
                 }
             });
 
+            // beanstalk
             if(seedPlanted) {
-                GenerateItem(room, "#4a0", 450, 100, "Beanstalk");
+                background = State.PresentBgBean;
+                GenerateClickZone(room, 419, 49, 70, 152, clickedBy => {
+                    if(clickedBy == null) {
+                        room.showMessageBox(
+`Though it was transplanted,
+this beanstalk is still growing strong.`);
+                    }
+                });
             }
 
             GenerateDropTarget(room, State.PresentTable, new Render.Box(220,124, 142,28));
@@ -343,14 +354,17 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             background = State.FutureBg;
 
-            GenerateItem(room, "#44f", 450, 100, "Seed Vault", clickedBy => {
+            GenerateClickZone(room, 410, 44, 79, 151, clickedBy => {
                 if(clickedBy == null) {
                     if(funded) {
                         PopupItemBox(room, room.State.FutureVault,
-                            "Seed Vault! Well funded with lots of seeds!");
+`It's a seed vault!
+There are lots of seeds.
+The beanstalk seeds look interesting.`);
                     } else {
                         room.showMessageBox(
-                            "Seed Vault! No actual seeds, alas. Budget cuts.");
+`It might be a seed vault?
+Budget cuts leave it looking pretty empty.`);
                     }
                 }
             });
