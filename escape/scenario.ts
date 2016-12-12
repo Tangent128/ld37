@@ -56,6 +56,7 @@ class GameState {
     FutureBgDino = RenderImage.load("img/wskel.png");
 
     DialogBg = RenderImage.load("img/dialog.png");
+    Buttons = RenderImage.load("img/buttons.png");
 };
 
 interface IsGenerated {
@@ -175,64 +176,67 @@ function ToObjectLayer(room: GuiRoom<GameState>, entity: any) {
 
 function PopupTimeMachine(room: GuiRoom<GameState>) {
 
-    let cancel: Function;
+    let makeButton = (x, time: TimePeriod, clickFunc?) => {
+        let button = {
+            Location: new ECS.Location(150 + x,150),
+            Generated: true,
+            RenderImage: new RenderImage.RenderImage(
+                room.ObjectLayer, room.State.Buttons,
+                x, 0, 50, 50
+            ),
+            ClickTarget: new Mouse.ClickTarget(
+                Mouse.UiLayer.Object,
+                new Render.Box(0,0, 50, 50),
+                clickFunc || (clickedBy => {
+                    room.State.TimePeriod = time;
+                    GenerateRoom(room);
+                })
+            )
+        };
+        room.add(button);
+    };
 
-    let root = room.makeDummyObject("#40a", 750, 150, "Time Machine");
-    ToObjectLayer(room, root);
-    Slide.Slide(root, 200, 250, 40);
+    let root = {
+        Generated: true,
+        Location: new ECS.Location(0, 0),
+        RenderImage: new RenderImage.RenderImage(
+            room.ObjectBgLayer, room.State.DialogBg,
+            0, 0, 500, 400
+        )
+    };
+    room.add(root);
+
+    // message
+    let text = "It's a time machine!\n\nWhen would you like to go today?";
+    let message = {
+        Generated: true,
+        Location: new ECS.Location(250, 50+16),
+        RenderText: new Textbox.Text(room.ObjectLayer, text)
+    };
+    room.add(message);
 
     // buttons
-    let alchemy = room.makeDummyObject("#880", 0, 0, "Alchemy");
-    ToObjectLayer(room, alchemy);
-    Pin.Attach(root, alchemy, 150, -70);
-    room.onClick(alchemy, clickedBy => {
-        if(clickedBy == null) {
-            room.State.TimePeriod = TimePeriod.Alchemy;
-            GenerateRoom(room);
-            cancel();
-        }
-    });
 
-    let present = room.makeDummyObject("#fcc", 0, 0, "Present");
-    ToObjectLayer(room, present);
-    Pin.Attach(root, present, 150, 0);
-    room.onClick(present, clickedBy => {
-        if(clickedBy == null) {
-            room.State.TimePeriod = TimePeriod.Present;
-            GenerateRoom(room);
-            cancel();
-        }
-    });
+    makeButton(50, TimePeriod.Alchemy);
+    makeButton(100, TimePeriod.Present);
+    makeButton(150, TimePeriod.Future);
 
-    let future = room.makeDummyObject("#0fa", 0, 0, "Future");
-    ToObjectLayer(room, future);
-    Pin.Attach(root, future, 150, 70);
-    room.onClick(future, clickedBy => {
-        if(clickedBy == null) {
-            room.State.TimePeriod = TimePeriod.Future;
-            GenerateRoom(room);
-            cancel();
-        }
-    });
-
-    let back = room.makeDummyObject("#440", 0, 0, "Cancel");
-    ToObjectLayer(room, back);
-    Pin.Attach(root, back, 70, 70);
-    room.onClick(back, clickedBy => {
-        if(clickedBy == null) {
-            cancel();
-        }
-    });
-
-    cancel = () => {
-        Slide.Slide(root, -250, 250, 40, () => {
-            root.deleted = true;
-            alchemy.deleted = true;
-            present.deleted = true;
-            future.deleted = true;
-            back.deleted = true;
-        });
+    // dismiss
+    let dismissBox = new Render.Box(210, 225, 80, 30);
+    let back = {
+        Generated: true,
+        ClickTarget: new Mouse.ClickTarget(
+            Mouse.UiLayer.Object,
+            dismissBox,
+            clickedBy => {
+                if (clickedBy == null) {
+                    GenerateRoom(room);
+                }
+            }
+        )
     };
+    room.add(back);
+
 };
 
 function PopupItemBox(
