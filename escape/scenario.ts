@@ -41,9 +41,7 @@ class GameState {
     ];
 
     // misc
-    Inventory = [
-        InventoryItemType.Gold
-    ];
+    Inventory = new Array<InventoryItemType>();
 
     // permanent objects
     InventoryBox: Mouse.HasTarget;
@@ -222,7 +220,7 @@ function PopupTimeMachine(room: GuiRoom<GameState>) {
         makeButton(0, TimePeriod.Present, clickedBy => {
             room.showMessageBox(
 `Dangit, the machine won't let you escape the room
-via time tavel. Instead, it summons the creature
+via time travel. Instead, it summons the creature
 of interest to the present.`);
             room.State.DinosaurSummoned = true;
             room.State.TimePeriod = TimePeriod.Present;
@@ -348,7 +346,7 @@ Included:
 - A strange bone. From a big lizard?
 Alchemy says it lived 67 million years ago.
 And died of lead poisoning.
-We must turn all lead to gold.`);
+Another reason we must turn all lead to gold.`);
                     }
                 });
             }
@@ -356,6 +354,11 @@ We must turn all lead to gold.`);
             GenerateClickZone(room, 235, 127, 60, 21, clickedBy => {
                 if(clickedBy == null) {
                     room.showMessageBox(`It's an alchemist's table.`);
+                } else if(IsInventoryItem(clickedBy, InventoryItemType.Lead)) {
+                    room.assignInventoryItem(clickedBy, InventoryItemType.Gold);
+                    (clickedBy as ECS.Entity).deleted = true;
+                    State.PastTable.push(InventoryItemType.Gold);
+                    GenerateRoom(room);
                 }
             });
 
