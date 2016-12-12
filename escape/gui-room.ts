@@ -98,7 +98,7 @@ class GuiRoom<State> extends ECS.Room {
 
         this.renderer.reset();
 
-        this.DebugRenderSystem.run(this.Entities);
+        //this.DebugRenderSystem.run(this.Entities);
         this.TextRenderSystem.run(this.Entities);
         this.ImageRenderSystem.run(this.Entities);
 
