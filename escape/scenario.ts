@@ -16,6 +16,7 @@ class GameState {
     PastTable = new Array<InventoryItemType>();
     PastHole = new Array<InventoryItemType>();
     PastTimeCapsule = [
+        InventoryItemType.Screwdriver,
     ];
 
     TimeCapsuleUncovered = false;
@@ -40,7 +41,6 @@ class GameState {
 
     // misc
     Inventory = [
-        InventoryItemType.Screwdriver,
         InventoryItemType.Gold
     ];
 
@@ -312,13 +312,47 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
             background = State.AlchemyBg;
 
-            GenerateDropTarget(room, State.PastHole, new Render.Box(329,254, 37,25));
+            if(!State.TimeCapsuleUncovered) {
+                GenerateClickZone(room, 329,254, 37,25, clickedBy => {
+                    if(IsInventoryItem(clickedBy, InventoryItemType.Shovel)) {
+                        State.TimeCapsuleUncovered = true;
+                        // this has side-effect of deleting the shovel;
+                        // acceptable for now, but technically a bug
+                        GenerateRoom(room);
+                    }
+                });
+            } else {
+                background = State.AlchemyBgCapsule;
+
+                GenerateDropTarget(room, State.PastHole, new Render.Box(329,254, 37,25));
+
+                GenerateClickZone(room, 172, 190, 92, 100, clickedBy => {
+                    if(clickedBy == null) {
+                        PopupItemBox(room, State.PastTimeCapsule, `Time Capsule.`);
+                    }
+                });
+            }
+
+            GenerateClickZone(room, 235, 127, 60, 21, clickedBy => {
+                if(clickedBy == null) {
+                    room.showMessageBox(`It's an alchemist's table.`);
+                }
+            });
+
+            GenerateDropTarget(room, State.PastTable, new Render.Box(299,127,60,21));
 
             break;
 
         case TimePeriod.Present:
 
             background = State.PresentBg;
+
+            // news
+            GenerateClickZone(room, 188, 231, 69, 54, clickedBy => {
+                if(clickedBy == null) {
+                    room.showMessageBox(`Newspaper.`);
+                }
+            });
 
             // duct
             GenerateClickZone(room, 412, 8, 69, 39, clickedBy => {
@@ -336,6 +370,17 @@ You Win!`, () => ResetGame(room));
                     room.showMessageBox("The grate's screwed on tightly.");
                 }
             });
+
+            // dinosaur
+            if(State.DinosaurSummoned) {
+                background = State.PresentBgDino;
+
+                GenerateClickZone(room, 27, 185, 151, 115, clickedBy => {
+                    if(clickedBy == null) {
+                        room.showMessageBox(`It's a very confused dinosaur.`);
+                    }
+                });
+            }
 
             // beanstalk
             if(seedPlanted) {
@@ -357,6 +402,13 @@ this beanstalk is still growing strong.`);
         case TimePeriod.Future:
 
             background = State.FutureBg;
+
+            if(State.DinosaurSummoned) {
+                GenerateDropTarget(
+                    room, State.FutureDinosaur, new Render.Box(61,264,96,29));
+            }
+
+            GenerateDropTarget(room, State.FutureTable, new Render.Box(208,124, 164,28));
 
             GenerateClickZone(room, 410, 44, 79, 151, clickedBy => {
                 if(clickedBy == null) {
@@ -389,6 +441,13 @@ Budget cuts leave it looking pretty empty.`);
             Generated: true
         });
     }
+
+    // door
+    GenerateClickZone(room, 39, 70, 82, 107, clickedBy => {
+        if(clickedBy == null) {
+            room.showMessageBox(`The door is utterly locked.`);
+        }
+    });
 
     // time machine
     GenerateClickZone(room, 428, 198, 57, 103, clickedBy => {
