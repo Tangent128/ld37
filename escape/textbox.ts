@@ -60,7 +60,7 @@ namespace Textbox {
 
     };
 
-    const SLIDE_SPEED = 50;
+    const SLIDE_SPEED = 70;
     export function MessageBox(
         entities: ECS.Entity[],
         bgLayer: Render.Layer,
