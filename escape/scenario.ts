@@ -17,6 +17,7 @@ class GameState {
     PastHole = new Array<InventoryItemType>();
     PastTimeCapsule = [
         InventoryItemType.Screwdriver,
+        InventoryItemType.Bone,
     ];
 
     TimeCapsuleUncovered = false;
@@ -217,6 +218,17 @@ function PopupTimeMachine(room: GuiRoom<GameState>) {
 
     // buttons
 
+    if(room.State.TimeCapsuleViewed && ! room.State.DinosaurSummoned) {
+        makeButton(0, TimePeriod.Present, clickedBy => {
+            room.showMessageBox(
+`Dangit, the machine won't let you escape the room
+via time tavel. Instead, it summons the creature
+of interest to the present.`);
+            room.State.DinosaurSummoned = true;
+            room.State.TimePeriod = TimePeriod.Present;
+            GenerateRoom(room);
+        });
+    }
     makeButton(50, TimePeriod.Alchemy);
     makeButton(100, TimePeriod.Present);
     makeButton(150, TimePeriod.Future);
@@ -328,7 +340,15 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 
                 GenerateClickZone(room, 172, 190, 92, 100, clickedBy => {
                     if(clickedBy == null) {
-                        PopupItemBox(room, State.PastTimeCapsule, `Time Capsule.`);
+                        State.TimeCapsuleViewed = true;
+                        PopupItemBox(room, State.PastTimeCapsule,
+`We leave this time capsule to be found by the future.
+Included:
+- A dazzling new invention, the screwdriver!
+- A strange bone. From a big lizard?
+Alchemy says it lived 67 million years ago.
+And died of lead poisoning.
+We must turn all lead to gold.`);
                     }
                 });
             }
@@ -365,7 +385,7 @@ function GenerateRoom(room: GuiRoom<GameState>) {
 `Working the grate off with the screwdriver,
 you open up a path to freedom!
 
-You Win!`, () => ResetGame(room));
+You Win! Resetting game...`, () => ResetGame(room));
                 } else {
                     room.showMessageBox("The grate's screwed on tightly.");
                 }
@@ -404,6 +424,8 @@ this beanstalk is still growing strong.`);
             background = State.FutureBg;
 
             if(State.DinosaurSummoned) {
+                background = State.FutureBgDino;
+
                 GenerateDropTarget(
                     room, State.FutureDinosaur, new Render.Box(61,264,96,29));
             }

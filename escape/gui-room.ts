@@ -10,7 +10,11 @@ enum InventoryItemType {
     Screwdriver,
     Lead,
     Gold,
-    Seed
+    Seed,
+    // useless decoration
+    Bone,
+    Mug,
+    Zorp
 };
 class InventoryItem {
 
