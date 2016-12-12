@@ -24,7 +24,9 @@ class GameState {
     TimeCapsuleViewed = false;
 
     // present
-    PresentTable = new Array<InventoryItemType>();
+    PresentTable = [
+        InventoryItemType.Mug
+    ];
     PresentDesk = new Array<InventoryItemType>();
 
     DinosaurSummoned = false;
@@ -32,6 +34,7 @@ class GameState {
     // future
     FutureTable = [
         InventoryItemType.Shovel,
+        InventoryItemType.Zorp
     ];
     FutureVault = [
         InventoryItemType.Seed,
@@ -56,6 +59,7 @@ class GameState {
 
     DialogBg = RenderImage.load("img/dialog.png");
     Buttons = RenderImage.load("img/buttons.png");
+    Items = RenderImage.load("img/items.png");
 };
 
 interface IsGenerated {
@@ -89,19 +93,6 @@ function GenerateClickZone(
     return entity;
 };
 
-function GenerateItem(
-    room: GuiRoom<GameState>,
-    color: string, x: number, y: number, label: string,
-    callback: (clickedBy: Mouse.IsCursor) => void = null
-) {
-    let entity = room.makeDummyObject(color, x, y, label);
-    MarkGenerated(entity);
-    if(callback) {
-        room.onClick(entity, callback);
-    }
-    return entity;
-};
-
 function PopulateItem(
     room: GuiRoom<GameState>,
     type: InventoryItemType,
@@ -120,8 +111,29 @@ function PopulateItem(
             break;
     }
 
-    let entity = GenerateItem(room, color, x, y, name);
-    room.assignInventoryItem(entity, type, list);
+    let entity = {
+        Location: new ECS.Location(x, y),
+        Generated: true,
+        RenderImage: new RenderImage.RenderImage(
+            room.RoomLayer, room.State.Items,
+            type * 32, 0, 32, 32,
+            -16, -16
+        ),
+        InventoryItem: new InventoryItem(type),
+        ClickTarget: new Mouse.ClickTarget(
+            Mouse.UiLayer.Room, new Render.Box(-16,-16,32,32),
+            clickedWith => {
+                if (clickedWith == null) {
+                    entity.RenderImage.Layer = room.CursorLayer;
+                    entity.InventoryItem.remove();
+                    Mouse.MakeCursor(entity);
+                }
+            }
+        )
+    };
+    room.add(entity);
+    room.assignInventoryItem(entity, type);
+    console.log(entity);
     return entity;
 };
 
@@ -139,8 +151,7 @@ function PopulateDropTarget(
 
     list.map(item => {
         let entity = PopulateItem(room, item, x, y, list);
-        entity.RenderDebugBox.Layer = itemLayer;
-        entity.RenderText.Layer = itemLayer;
+        entity.RenderImage.Layer = itemLayer;
         entity.ClickTarget.layer = target.ClickTarget.layer;
         x = x + 40;
     });
@@ -355,7 +366,6 @@ Another reason we must turn all lead to gold.`);
                 if(clickedBy == null) {
                     room.showMessageBox(`It's an alchemist's table.`);
                 } else if(IsInventoryItem(clickedBy, InventoryItemType.Lead)) {
-                    room.assignInventoryItem(clickedBy, InventoryItemType.Gold);
                     (clickedBy as ECS.Entity).deleted = true;
                     State.PastTable.push(InventoryItemType.Gold);
                     GenerateRoom(room);

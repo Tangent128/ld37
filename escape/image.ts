@@ -8,7 +8,8 @@ namespace RenderImage {
             public Layer: Render.Layer,
             public Image: HTMLImageElement,
             public X = 0, public Y = 0,
-            public W = 32, public H = 32
+            public W = 32, public H = 32,
+            public XOffset = 0, public YOffset = 0
         ) { };
 
         render(cx: CanvasRenderingContext2D) {
@@ -16,7 +17,7 @@ namespace RenderImage {
 
             cx.drawImage(this.Image,
                 this.X,this.Y, this.W,this.H,
-                0,0, this.W,this.H
+                this.XOffset,this.YOffset, this.W,this.H
             );
         };
     };

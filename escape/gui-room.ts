@@ -196,6 +196,9 @@ class GuiRoom<State> extends ECS.Room {
                         if (RenderDebug.HasBox(clickedWith)) {
                             clickedWith.RenderDebugBox.Layer = itemLayer;
                         }
+                        if (RenderImage.HasImage(clickedWith)) {
+                            clickedWith.RenderImage.Layer = itemLayer;
+                        }
                         if (Textbox.HasText(clickedWith)) {
                             clickedWith.RenderText.Layer = itemLayer;
                         }
