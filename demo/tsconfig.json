@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "experimentalDecorators": true,
-        "outFile": "demo.js"
-    },
-    "files": [
-        "demo.ts"
-    ]
-}
