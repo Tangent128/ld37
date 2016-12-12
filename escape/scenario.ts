@@ -383,7 +383,25 @@ Another reason we must turn all lead to gold.`);
             // news
             GenerateClickZone(room, 188, 231, 69, 54, clickedBy => {
                 if(clickedBy == null) {
-                    room.showMessageBox(`Newspaper.`);
+
+                    let digText = "";
+                    if(!State.TimeCapsuleUncovered) {
+                        digText =
+`A time capsule from the 1500s was discovered
+while digging the new basement; it was directly
+under our office chair!\n`
+                    } else {
+                        digText =
+`A time capsule from the 1500s was discovered
+while digging the new basement; it was boring.\n`
+                    }
+
+                    room.showMessageBox(
+`==NEWS==
+${digText}
+Also, the university seed vault project is
+looking for funding; please leave any donations
+on the office desk.`);
                 }
             });
 
@@ -508,4 +526,6 @@ function ResetGame(room: GuiRoom<GameState>) {
     );
 
     GenerateRoom(room);
+
+    room.showMessageBox("You're trapped in a university lab's office!\nCan you make an escape?");
 };
