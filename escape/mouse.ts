@@ -45,7 +45,7 @@ namespace Mouse {
             private element: HTMLElement,
             private room: ECS.Room
         ) {
-            this.element.addEventListener("click", this.doClick.bind(this), false);
+            this.element.addEventListener("mousedown", this.doClick.bind(this), false);
             this.element.addEventListener("mousemove", this.doMove.bind(this), false);
         };
 

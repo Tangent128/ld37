@@ -132,7 +132,7 @@ function PopulateItem(
         )
     };
     room.add(entity);
-    room.assignInventoryItem(entity, type);
+    entity.InventoryItem.List = list;
     console.log(entity);
     return entity;
 };
